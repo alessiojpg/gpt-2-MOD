@@ -52,6 +52,8 @@ parser.add_argument('--val_batch_size', metavar='SIZE', type=int, default=2, hel
 parser.add_argument('--val_batch_count', metavar='N', type=int, default=40, help='Number of batches for validation.')
 parser.add_argument('--val_every', metavar='STEPS', type=int, default=0, help='Calculate validation loss every STEPS steps.')
 
+parser.add_argument('--n_iterations', metavar='N_ITERATIONS', type=int, default=1000, help='Maximum number of iterations to reach before saving.')
+
 
 def maketree(path):
     try:
@@ -255,7 +257,7 @@ def main():
         start_time = time.time()
 
         try:
-            while True:
+            while counter <= int(args.n_iterations):
                 if counter % args.save_every == 0:
                     save()
                 if counter % args.sample_every == 0:
@@ -280,7 +282,7 @@ def main():
                             avg_loss[1] * 0.99 + 1.0)
 
                 print(
-                    '[{counter} | {time:2.2f}] loss={loss:2.2f} avg={avg:2.2f}'
+                    '[ {counter}° | Δt: {time:2.2f}s ] loss={loss:2.2f} avg={avg:2.2f}'
                     .format(
                         counter=counter,
                         time=time.time() - start_time,
@@ -288,6 +290,8 @@ def main():
                         avg=avg_loss[0] / avg_loss[1]))
 
                 counter += 1
+            print("Maximum number of iteration reached.")
+            save()
         except KeyboardInterrupt:
             print('interrupted')
             save()
